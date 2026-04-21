@@ -6,15 +6,17 @@ public class WaypointAgent : MonoBehaviour
 {
     public Transform[] waypoints;
     public float stopDistance = 0.8f;
-    public float pauseDuration = 1.5f; // secondes de pause au waypoint
+    public float pauseDuration = 1.5f;
 
     private NavMeshAgent agent;
+    private Animator animator;
     private int currentTarget = -1;
     private bool waiting = false;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
         agent.stoppingDistance = stopDistance;
         GoToNext();
     }
@@ -34,7 +36,13 @@ public class WaypointAgent : MonoBehaviour
     {
         waiting = true;
         agent.isStopped = true;
+
+        // Déclenche l'animation d'arrivée
+        if (animator != null)
+            animator.SetTrigger("arrived");
+
         yield return new WaitForSeconds(pauseDuration);
+
         agent.isStopped = false;
         waiting = false;
         GoToNext();

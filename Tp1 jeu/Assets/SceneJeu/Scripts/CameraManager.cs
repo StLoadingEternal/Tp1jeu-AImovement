@@ -4,14 +4,14 @@ public class CameraManager : MonoBehaviour
 {
     public Camera cameraOverview;
     public Camera cameraJaune;
-    public Camera cameraRouge;
+
 
     private Camera[] cameras;
     private int idx = 0;
 
     void Start()
     {
-        cameras = new Camera[] { cameraOverview, cameraJaune, cameraRouge };
+        cameras = new Camera[] { cameraOverview, cameraJaune };
         Activate(0);
     }
 
