@@ -8,6 +8,11 @@ public class WaypointAgent : MonoBehaviour
     public float stopDistance = 0.8f;
     public float pauseDuration = 1.5f;
 
+    [Header("Vitesse")]
+    public float walkSpeed = 1.5f;
+    public float runSpeed = 3.5f;
+    public float walkDistanceThreshold = 3f; // distance pour passer en marche
+
     private NavMeshAgent agent;
     private Animator animator;
     private int currentTarget = -1;
@@ -25,6 +30,20 @@ public class WaypointAgent : MonoBehaviour
     {
         if (waiting) return;
 
+        // Adapter la vitesse selon la distance au waypoint
+        if (currentTarget >= 0 && currentTarget < waypoints.Length)
+        {
+            float distanceToTarget = Vector3.Distance(
+                transform.position,
+                waypoints[currentTarget].position
+            );
+
+            if (distanceToTarget <= walkDistanceThreshold)
+                agent.speed = walkSpeed; // proche → marche
+            else
+                agent.speed = runSpeed;  // loin → course
+        }
+
         if (!agent.pathPending &&
             agent.remainingDistance <= stopDistance)
         {
@@ -37,9 +56,11 @@ public class WaypointAgent : MonoBehaviour
         waiting = true;
         agent.isStopped = true;
 
-        // Déclenche l'animation d'arrivée
         if (animator != null)
-            animator.SetTrigger("arrived");
+        {
+            animator.ResetTrigger("Arrived");
+            animator.SetTrigger("Arrived");
+        }
 
         yield return new WaitForSeconds(pauseDuration);
 
